@@ -1,0 +1,629 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema Human_health
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema Human_health
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `Human_health` DEFAULT CHARACTER SET utf8 ;
+USE `Human_health` ;
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Patients`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Patients` (
+  `MRN` INT NOT NULL,
+  `First_Name` VARCHAR(100) NOT NULL,
+  `Last_Name` VARCHAR(100) NOT NULL,
+  `DOB` DATE NOT NULL,
+  `Gender` VARCHAR(45) NOT NULL,
+  `CNIC` INT NOT NULL,
+  `Address` VARCHAR(200) NULL,
+  `Mobile_1` INT NULL,
+  `Mobile_2` INT NULL,
+  `Home_No` INT NULL,
+  `Marital_Status` VARCHAR(45) NULL,
+  `People_at_home` INT NULL,
+  `Education` VARCHAR(45) NULL,
+  `Children` INT NULL,
+  `Occupation` VARCHAR(45) NULL,
+  `Age_of_retirement` INT NULL,
+  PRIMARY KEY (`MRN`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Subscriber`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Subscriber` (
+  `Sub_id` VARCHAR(100) NOT NULL,
+  `First_Name` VARCHAR(100) NULL,
+  `Last_Name` VARCHAR(100) NULL,
+  `Age` INT NULL,
+  `Occupation` VARCHAR(45) NULL,
+  `Gender` VARCHAR(45) NULL,
+  `CNIC` INT NULL,
+  `Residence_country` VARCHAR(100) NULL,
+  `Residence_city` VARCHAR(100) NULL,
+  `Relationship_w_patient` VARCHAR(45) NULL,
+  `Mobile` INT NULL,
+  `Email` VARCHAR(100) NULL,
+  PRIMARY KEY (`Sub_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Subscription`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Subscription` (
+  `Subscription_id` VARCHAR(100) NOT NULL,
+  `Start_date` DATE NULL,
+  `Start_time` TIME NULL,
+  `Confirmation_text` VARCHAR(45) NULL,
+  `Patients_MRN` INT NOT NULL,
+  `Subscriber_Sub_id` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`Subscription_id`),
+  INDEX `fk_Subscription_Patients_idx` (`Patients_MRN` ASC) VISIBLE,
+  INDEX `fk_Subscription_Subscriber1_idx` (`Subscriber_Sub_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Subscription_Patients`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Subscription_Subscriber1`
+    FOREIGN KEY (`Subscriber_Sub_id`)
+    REFERENCES `Human_health`.`Subscriber` (`Sub_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Vitals`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Vitals` (
+  `Vitals_id` VARCHAR(100) NOT NULL,
+  `Vital_date` DATE NULL,
+  `Temperature` INT NULL,
+  `Respiratory_rate` INT NULL,
+  `Oximetry` INT NULL,
+  `BP_distolic` INT NULL,
+  `BP_sistolic` INT NULL,
+  `Weight` INT NULL,
+  `Height` INT NULL,
+  `BMI` INT NULL,
+  `Glucose` INT NULL,
+  `Glucose_last_meal` INT NULL,
+  `Patients_MRN` INT NOT NULL,
+  PRIMARY KEY (`Vitals_id`),
+  INDEX `fk_Vitals_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  CONSTRAINT `fk_Vitals_Patients1`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Family_history`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Family_history` (
+  `FH_id` VARCHAR(100) NOT NULL,
+  `Mother_death_age` INT NULL,
+  `Father_death_age` INT NULL,
+  `Siblings_early_death` VARCHAR(45) NULL,
+  `CAD` VARCHAR(45) NULL,
+  `HTN` VARCHAR(45) NULL,
+  `DM` VARCHAR(45) NULL,
+  `Alzheimers` VARCHAR(45) NULL,
+  `Autoimmune_disease` VARCHAR(45) NULL,
+  `Inflammatory_disease` VARCHAR(45) NULL,
+  `Cancer` VARCHAR(45) NULL,
+  `Obesity` VARCHAR(45) NULL,
+  `Psych_history` VARCHAR(45) NULL,
+  `MI_stroke` VARCHAR(45) NULL,
+  `Patients_MRN` INT NOT NULL,
+  PRIMARY KEY (`FH_id`),
+  INDEX `fk_Family_history_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  CONSTRAINT `fk_Family_history_Patients1`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`FMD`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`FMD` (
+  `FMD_id` VARCHAR(100) NOT NULL,
+  `First_Name` VARCHAR(45) NULL,
+  `Last_Name` VARCHAR(45) NULL,
+  `Age` INT NULL,
+  `Gender` VARCHAR(45) NULL,
+  `Teams_Team_id` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`FMD_id`),
+  INDEX `fk_FMD_Teams1_idx` (`Teams_Team_id` ASC) VISIBLE,
+  CONSTRAINT `fk_FMD_Teams1`
+    FOREIGN KEY (`Teams_Team_id`)
+    REFERENCES `Human_health`.`Teams` (`Team_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`HCC`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`HCC` (
+  `HCC_id` VARCHAR(100) NOT NULL,
+  `First_Name` VARCHAR(45) NULL,
+  `Last_Name` VARCHAR(45) NULL,
+  `Age` INT NULL,
+  `Gender` VARCHAR(45) NULL,
+  `Teams_Team_id` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`HCC_id`),
+  INDEX `fk_HCC_Teams1_idx` (`Teams_Team_id` ASC) VISIBLE,
+  CONSTRAINT `fk_HCC_Teams1`
+    FOREIGN KEY (`Teams_Team_id`)
+    REFERENCES `Human_health`.`Teams` (`Team_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Teams`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Teams` (
+  `Team_id` VARCHAR(100) NOT NULL,
+  `Team_name` VARCHAR(45) NULL,
+  `FMD_FMD_id` VARCHAR(100) NOT NULL,
+  `HCC_HCC_id` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`Team_id`),
+  INDEX `fk_Teams_FMD1_idx` (`FMD_FMD_id` ASC) VISIBLE,
+  INDEX `fk_Teams_HCC1_idx` (`HCC_HCC_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Teams_FMD1`
+    FOREIGN KEY (`FMD_FMD_id`)
+    REFERENCES `Human_health`.`FMD` (`FMD_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Teams_HCC1`
+    FOREIGN KEY (`HCC_HCC_id`)
+    REFERENCES `Human_health`.`HCC` (`HCC_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Focused_Examination`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Focused_Examination` (
+  `FE_id` VARCHAR(100) NOT NULL,
+  `FE_date` DATE NULL,
+  `Hand_fingers` VARCHAR(45) NULL,
+  `Nailbed` VARCHAR(45) NULL,
+  `Scalp` VARCHAR(45) NULL,
+  `Motility_Exam` VARCHAR(45) NULL,
+  `R_Eye` VARCHAR(45) NULL,
+  `L_Eye` VARCHAR(45) NULL,
+  `Nasal_passages` VARCHAR(45) NULL,
+  `Perioral` VARCHAR(45) NULL,
+  `Oral_entry_dryness` VARCHAR(45) NULL,
+  `Tongue_hygeine` VARCHAR(45) NULL,
+  `Dehydration` VARCHAR(45) NULL,
+  `Pharynx_tonsils` VARCHAR(45) NULL,
+  `Tuning_fork` VARCHAR(45) NULL,
+  `Otoscope_RE` VARCHAR(45) NULL,
+  `Otoscope_LE` VARCHAR(45) NULL,
+  `Chest_Exam` VARCHAR(45) NULL,
+  `Auscultation` VARCHAR(45) NULL,
+  `ECG` VARCHAR(45) NULL,
+  `Abdominal_exam` VARCHAR(45) NULL,
+  `Muscles_power_active_passive` VARCHAR(45) NULL,
+  `CNS_review` VARCHAR(45) NULL,
+  `Edema` VARCHAR(45) NULL,
+  `Bed_Sores` VARCHAR(45) NULL,
+  `Ulcers_growth` VARCHAR(45) NULL,
+  `Focused_Examinationcol` VARCHAR(45) NULL,
+  `Falls_past_6m` VARCHAR(45) NULL,
+  `Subjective_memory_concerns` VARCHAR(45) NULL,
+  `Sleep_concerns` VARCHAR(45) NULL,
+  `Anxiety_mood_concerns` VARCHAR(45) NULL,
+  `Other_metric` VARCHAR(45) NULL,
+  `Patients_MRN` INT NOT NULL,
+  `Teams_Team_id` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`FE_id`),
+  INDEX `fk_Focused_Examination_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  INDEX `fk_Focused_Examination_Teams1_idx` (`Teams_Team_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Focused_Examination_Patients1`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Focused_Examination_Teams1`
+    FOREIGN KEY (`Teams_Team_id`)
+    REFERENCES `Human_health`.`Teams` (`Team_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Visits`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Visits` (
+  `Visit_id` INT NOT NULL,
+  `Visit_date` DATE NULL,
+  `Visit_time` TIME NULL,
+  `No_of_Visit` INT NULL,
+  `Teams_Team_id` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`Visit_id`),
+  INDEX `fk_Visits_Teams1_idx` (`Teams_Team_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Visits_Teams1`
+    FOREIGN KEY (`Teams_Team_id`)
+    REFERENCES `Human_health`.`Teams` (`Team_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Medications`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Medications` (
+  `Medicine_id` INT NOT NULL,
+  `Medicine_name` VARCHAR(100) NULL,
+  `Medicine_type` VARCHAR(100) NULL,
+  `Instruction` VARCHAR(45) NULL,
+  `Route` VARCHAR(45) NULL,
+  `Dose` VARCHAR(45) NULL,
+  `Time` VARCHAR(45) NULL,
+  `Start_date` DATE NULL,
+  `Stop_date` DATE NULL,
+  `Notes` VARCHAR(500) NULL,
+  `Patients_MRN` INT NOT NULL,
+  PRIMARY KEY (`Medicine_id`),
+  INDEX `fk_Medications_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  CONSTRAINT `fk_Medications_Patients1`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Past_medical_history`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Past_medical_history` (
+  `Disease_id` VARCHAR(100) NOT NULL,
+  `Disease_name` VARCHAR(100) NULL,
+  `Disease_type` VARCHAR(100) NULL,
+  PRIMARY KEY (`Disease_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Patients_has_Past_medical_history`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Patients_has_Past_medical_history` (
+  `Patients_MRN` INT NOT NULL,
+  `Past_medical_history_Disease_id` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`Patients_MRN`, `Past_medical_history_Disease_id`),
+  INDEX `fk_Patients_has_Past_medical_history_Past_medical_history1_idx` (`Past_medical_history_Disease_id` ASC) VISIBLE,
+  INDEX `fk_Patients_has_Past_medical_history_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  CONSTRAINT `fk_Patients_has_Past_medical_history_Patients1`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Patients_has_Past_medical_history_Past_medical_history1`
+    FOREIGN KEY (`Past_medical_history_Disease_id`)
+    REFERENCES `Human_health`.`Past_medical_history` (`Disease_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Physical_exam`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Physical_exam` (
+  `Exam_id` VARCHAR(100) NOT NULL,
+  `Exam_date` DATE NULL,
+  `Physical_assesment` VARCHAR(45) NULL,
+  `Vitals_reviewed` VARCHAR(45) NULL,
+  `Data_points_rev` VARCHAR(45) NULL,
+  `Speech` VARCHAR(45) NULL,
+  `Language` VARCHAR(45) NULL,
+  `Eyes` VARCHAR(45) NULL,
+  `Face` VARCHAR(45) NULL,
+  `Neck` VARCHAR(45) NULL,
+  `Gross_motor` VARCHAR(45) NULL,
+  `Gross_ambulation` VARCHAR(45) NULL,
+  `CNS` VARCHAR(45) NULL,
+  `Cardiac` VARCHAR(45) NULL,
+  `Lung` VARCHAR(45) NULL,
+  `Abdomen` VARCHAR(45) NULL,
+  `Back_tenderness` VARCHAR(45) NULL,
+  `Knee` VARCHAR(45) NULL,
+  `Neuropathy` VARCHAR(45) NULL,
+  `Limb` VARCHAR(45) NULL,
+  `Teams_Team_id` VARCHAR(100) NOT NULL,
+  `Patients_MRN` INT NOT NULL,
+  PRIMARY KEY (`Exam_id`),
+  INDEX `fk_Physical_exam_Teams1_idx` (`Teams_Team_id` ASC) VISIBLE,
+  INDEX `fk_Physical_exam_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  CONSTRAINT `fk_Physical_exam_Teams1`
+    FOREIGN KEY (`Teams_Team_id`)
+    REFERENCES `Human_health`.`Teams` (`Team_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Physical_exam_Patients1`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`ADLS`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`ADLS` (
+  `ADLS_id` VARCHAR(100) NOT NULL,
+  `Toileting` VARCHAR(45) NULL,
+  `Feeding` VARCHAR(45) NULL,
+  `Special_diet` VARCHAR(45) NULL,
+  `Dressing` VARCHAR(45) NULL,
+  `Grooming` VARCHAR(45) NULL,
+  `Walking` VARCHAR(45) NULL,
+  `Bathing` VARCHAR(45) NULL,
+  `Shower_chair` VARCHAR(45) NULL,
+  `Shower_fall` VARCHAR(45) NULL,
+  `Patients_MRN` INT NOT NULL,
+  PRIMARY KEY (`ADLS_id`),
+  INDEX `fk_ADLS_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  CONSTRAINT `fk_ADLS_Patients1`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`IADLS`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`IADLS` (
+  `IADLS_id` VARCHAR(100) NOT NULL,
+  `Telephone_use` VARCHAR(45) NULL,
+  `Emergency_lifeline` VARCHAR(45) NULL,
+  `Shopping` VARCHAR(45) NULL,
+  `Food_preparation` VARCHAR(45) NULL,
+  `Housekeeping` VARCHAR(45) NULL,
+  `Laundary` VARCHAR(45) NULL,
+  `Patients_MRN` INT NOT NULL,
+  PRIMARY KEY (`IADLS_id`),
+  INDEX `fk_ADLS_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  CONSTRAINT `fk_ADLS_Patients10`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Geriatric`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Geriatric` (
+  `G_id` VARCHAR(100) NOT NULL,
+  `Memory_trouble` VARCHAR(45) NULL,
+  `Fall_past_year` VARCHAR(45) NULL,
+  `Trouble_hearing` VARCHAR(45) NULL,
+  `Vision` VARCHAR(45) NULL,
+  `Weght_loss` VARCHAR(45) NULL,
+  `Sad_depressed` VARCHAR(45) NULL,
+  `Patients_MRN` INT NOT NULL,
+  PRIMARY KEY (`G_id`),
+  INDEX `fk_ADLS_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  CONSTRAINT `fk_ADLS_Patients100`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`ODPARA`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`ODPARA` (
+  `ODPARA_id` VARCHAR(100) NOT NULL,
+  `Date` DATE NULL,
+  `Onset` VARCHAR(45) NULL,
+  `Duration` VARCHAR(45) NULL,
+  `Progression` VARCHAR(45) NULL,
+  `Associated_factors` VARCHAR(45) NULL,
+  `Relieving_factors` VARCHAR(45) NULL,
+  `Patients_MRN` INT NOT NULL,
+  `Alleviating_factors` VARCHAR(45) NULL,
+  `Socrates` VARCHAR(45) NULL,
+  `Mood` VARCHAR(45) NULL,
+  PRIMARY KEY (`ODPARA_id`),
+  INDEX `fk_ADLS_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  CONSTRAINT `fk_ADLS_Patients101`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Allergy`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Allergy` (
+  `Allergy_id` VARCHAR(100) NOT NULL,
+  `Allergy_name` DATE NULL,
+  `Allergy_type` VARCHAR(45) NULL,
+  PRIMARY KEY (`Allergy_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Allergy_has_Patients`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Allergy_has_Patients` (
+  `Allergy_Allergy_id` VARCHAR(100) NOT NULL,
+  `Patients_MRN` INT NOT NULL,
+  PRIMARY KEY (`Allergy_Allergy_id`, `Patients_MRN`),
+  INDEX `fk_Allergy_has_Patients_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  INDEX `fk_Allergy_has_Patients_Allergy1_idx` (`Allergy_Allergy_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Allergy_has_Patients_Allergy1`
+    FOREIGN KEY (`Allergy_Allergy_id`)
+    REFERENCES `Human_health`.`Allergy` (`Allergy_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Allergy_has_Patients_Patients1`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Labs`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Labs` (
+  `Lab_id` VARCHAR(100) NOT NULL,
+  `Lab_name` VARCHAR(45) NULL,
+  `Lab_type` VARCHAR(45) NULL,
+  `Patients_MRN` INT NOT NULL,
+  PRIMARY KEY (`Lab_id`),
+  INDEX `fk_Labs_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  CONSTRAINT `fk_Labs_Patients1`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Dental_record`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Dental_record` (
+  `Dental_id` VARCHAR(100) NOT NULL,
+  `Dental_pain` VARCHAR(45) NULL,
+  `Last_visit` DATE NULL,
+  `Active_dental_issues` VARCHAR(100) NULL,
+  `Dental_habbits` VARCHAR(100) NULL,
+  `Comments` VARCHAR(500) NULL,
+  `Patients_MRN` INT NOT NULL,
+  PRIMARY KEY (`Dental_id`),
+  INDEX `fk_Dental_record_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  CONSTRAINT `fk_Dental_record_Patients1`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`ROS`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`ROS` (
+  `ROS_id` VARCHAR(100) NOT NULL,
+  `ROS_review_date` DATE NULL,
+  `Swallowing` VARCHAR(45) NULL,
+  `Breathing_concerns` VARCHAR(45) NULL,
+  `Pain_fatigue` VARCHAR(45) NULL,
+  `Sleep` VARCHAR(45) NULL,
+  `Headache` VARCHAR(45) NULL,
+  `Constipation` VARCHAR(45) NULL,
+  `Loose_stools` VARCHAR(45) NULL,
+  `Patients_MRN` INT NOT NULL,
+  PRIMARY KEY (`ROS_id`),
+  INDEX `fk_ROS_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  CONSTRAINT `fk_ROS_Patients1`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Past_surgical_history`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Past_surgical_history` (
+  `Surgery_id` VARCHAR(100) NOT NULL,
+  `Surgery_name` VARCHAR(45) NULL,
+  `Surgey_type` VARCHAR(45) NULL,
+  PRIMARY KEY (`Surgery_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Past_surgical_history_has_Patients`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Past_surgical_history_has_Patients` (
+  `Past_surgical_history_Surgery_id` VARCHAR(100) NOT NULL,
+  `Patients_MRN` INT NOT NULL,
+  PRIMARY KEY (`Past_surgical_history_Surgery_id`, `Patients_MRN`),
+  INDEX `fk_Past_surgical_history_has_Patients_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  INDEX `fk_Past_surgical_history_has_Patients_Past_surgical_history_idx` (`Past_surgical_history_Surgery_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Past_surgical_history_has_Patients_Past_surgical_history1`
+    FOREIGN KEY (`Past_surgical_history_Surgery_id`)
+    REFERENCES `Human_health`.`Past_surgical_history` (`Surgery_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Past_surgical_history_has_Patients_Patients1`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Human_health`.`Addiction`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Human_health`.`Addiction` (
+  `Addiction_id` VARCHAR(100) NOT NULL,
+  `Tobbaco` VARCHAR(45) NULL,
+  `Cigarette` VARCHAR(45) NULL,
+  `Cigar` VARCHAR(45) NULL,
+  `pan` VARCHAR(45) NULL,
+  `Vape_pod` VARCHAR(45) NULL,
+  `Sheesha` VARCHAR(45) NULL,
+  `Patients_MRN` INT NOT NULL,
+  `Alcohol` VARCHAR(45) NULL,
+  `Drugs` VARCHAR(45) NULL,
+  PRIMARY KEY (`Addiction_id`),
+  INDEX `fk_ADLS_Patients1_idx` (`Patients_MRN` ASC) VISIBLE,
+  CONSTRAINT `fk_ADLS_Patients102`
+    FOREIGN KEY (`Patients_MRN`)
+    REFERENCES `Human_health`.`Patients` (`MRN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
